@@ -1,0 +1,16 @@
+{
+  "name": "Dog do Rubão · Sistema de Gestão",
+  "short_name": "Dog do Rubão",
+  "description": "Vendas, estoque, produção e financeiro do trailer.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#150408",
+  "theme_color": "#150408",
+  "lang": "pt-BR",
+  "icons": [
+    { "src": "/icone-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icone-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}

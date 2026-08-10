@@ -4,6 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#150408">
+<link rel="manifest" href="/manifest.json">
+<link rel="apple-touch-icon" href="/icone-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Dog do Rubão">
 <title>Dog do Rubão · Sistema de Gestão</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -523,6 +528,40 @@ th:first-child,td:first-child{padding-left:0}th:last-child,td:last-child{padding
   <div class="card"><h2><span class="i" data-ico="historico"></span>Últimos registros</h2><div id="histEstoque"></div></div>
 </div>
 
+<!-- ---------------------------------------------------------------- PRODUÇÃO -->
+<div class="page" id="p-producao">
+  <div class="card">
+    <h2><span class="i" data-ico="tempo"></span>O que está pronto agora</h2>
+    <div class="hint" style="margin:0 0 14px">Isto é o que já foi preparado na cozinha e está no trailer para montar os lanches. Não confunda com a lista de compras do mercado.</div>
+    <div id="listaProducao"></div>
+  </div>
+
+  <div class="card" id="cardProduzir">
+    <h2><span class="i" data-ico="mais"></span>Registrar o que preparei</h2>
+    <label>O que foi preparado</label><select id="prPreparo"></select>
+    <div class="field-row">
+      <div><label>Quantidade</label><input id="prQtd" type="number" inputmode="decimal" step="0.01" placeholder="Ex: 1500"></div>
+      <div><label>Unidade</label><select id="prUn">
+        <option value="g">gramas (g)</option>
+        <option value="ml">mililitros (ml)</option>
+        <option value="kg">quilos (kg)</option>
+        <option value="l">litros (L)</option>
+        <option value="un">unidades</option>
+      </select></div>
+    </div>
+    <label>Observação <span style="color:var(--mut);font-weight:400">(opcional)</span></label>
+    <input id="prObs" placeholder="Ex: panela cheia, feito de manhã">
+    <button class="btn" id="btnProduzir">Registrar produção</button>
+    <div class="hint" id="prPrev"></div>
+  </div>
+
+  <div class="card">
+    <h2><span class="i" data-ico="receita"></span>Como se faz</h2>
+    <div class="hint" style="margin:0 0 14px">O passo a passo de cada preparo. Toque para abrir.</div>
+    <div id="listaPreparos"></div>
+  </div>
+</div>
+
 <!-- ----------------------------------------------------------------- COMPRAS -->
 <div class="page" id="p-compras">
   <div class="card">
@@ -593,6 +632,11 @@ th:first-child,td:first-child{padding-left:0}th:last-child,td:last-child{padding
       <div><label>Paguei no pacote</label><input id="iPreco" type="number" inputmode="decimal" step="0.01" placeholder="24,00"></div>
       <div><label>Rende quantas</label><input id="iRende" type="number" inputmode="decimal" step="0.01" placeholder="12"></div>
     </div>
+    <label>De onde vem</label>
+    <select id="iTipo">
+      <option value="compra">Comprado no mercado</option>
+      <option value="preparo">Preparado aqui na cozinha</option>
+    </select>
     <label>Estoque mínimo</label><input id="iMin" type="number" inputmode="decimal" step="0.01" placeholder="Ex: 20">
     <div class="hint">É este campo que faz o alerta de falta acender. Sem ele, você não descobre que está acabando.</div>
     <button class="btn" id="btnAddIng">Salvar insumo</button>
@@ -668,6 +712,14 @@ th:first-child,td:first-child{padding-left:0}th:last-child,td:last-child{padding
     <button class="btn quiet" id="btnExcel">Exportar para Excel</button>
     <button class="btn quiet" id="btnBackup" style="margin-top:10px">Baixar cópia de segurança</button>
   </div>
+  <div class="card" id="cardAvisos">
+    <h2><span class="i" data-ico="sino"></span>Avisos no celular</h2>
+    <div class="hint" style="margin:0 0 14px">O sistema te avisa quando um preparo vence, quando um insumo acaba e quando alguém tenta entrar. A notificação chega na tela mesmo com o app fechado.</div>
+    <div id="avisoStatus"></div>
+    <div id="avisoBotoes" style="margin-top:14px"></div>
+    <div class="hint" id="avisoAjuda" style="margin-top:12px"></div>
+  </div>
+
   <div class="card">
     <h2><span class="i" data-ico="conta"></span>Minha conta</h2>
     <div id="minhaConta"></div>
@@ -717,6 +769,8 @@ let KEY_=SUPABASE_KEY||localStorage.getItem('sb_key')||'';
    Um só traçado, uma só espessura, mesma grade de 24. Sem emoji.
    ===================================================================== */
 const ICO={
+producao:'<path d="M3.4 9.6h17.2"/><path d="M5.4 9.6v6.6a3.4 3.4 0 0 0 3.4 3.4h6.4a3.4 3.4 0 0 0 3.4-3.4V9.6"/><path d="M20.6 11.4h1.4a1.6 1.6 0 0 1 0 3.2h-1.4"/><path d="M9 6.6c0-1.1 1.1-1.4 1.1-2.6"/><path d="M13.4 6.6c0-1.1 1.1-1.4 1.1-2.6"/>',
+tempo:'<circle cx="12" cy="12" r="8.4"/><path d="M12 7.4V12l3 1.9"/>',
 painel:'<path d="M3 20.2h18"/><rect x="4.6" y="12" width="3.6" height="5.4" rx=".8"/><rect x="10.2" y="8" width="3.6" height="9.4" rx=".8"/><rect x="15.8" y="4.4" width="3.6" height="13" rx=".8"/>',
 vender:'<path d="M6.2 3.2h11.6v17.6l-2.3-1.5-2.3 1.5-2.3-1.5-2.4 1.5-2.3-1.5z"/><path d="M9.4 8.2h5.2"/><path d="M9.4 12h5.2"/>',
 estoque:'<path d="M3.2 8.4 12 3.9l8.8 4.5v7.2L12 20.1l-8.8-4.5z"/><path d="M3.2 8.4 12 12.9l8.8-4.5"/><path d="M12 12.9v7.2"/>',
@@ -763,6 +817,7 @@ const MODULOS=[
  {pag:'painel',   ico:'painel',   nome:'Painel',   desc:'Meta do dia, faturamento e resultado', chaves:['painel.ver']},
  {pag:'vender',   ico:'vender',   nome:'Vender',   desc:'Lançar as vendas do dia',              chaves:['vender.ver','vender.lancar','vender.historico']},
  {pag:'estoque',  ico:'estoque',  nome:'Estoque',  desc:'Saldo e movimentos do trailer',        chaves:['estoque.ver','estoque.entrada','estoque.saida','estoque.perda','estoque.ajuste','estoque.pedir']},
+ {pag:'producao', ico:'producao', nome:'Produção', desc:'O que foi preparado e até quando serve', chaves:['estoque.ver','estoque.entrada']},
  {pag:'compras',  ico:'compras',  nome:'Compras',  desc:'O que precisa comprar',                chaves:['compras.ver','compras.concluir']},
  {pag:'cardapio', ico:'cardapio', nome:'Cardápio', desc:'Produtos, preços e receitas',          chaves:['cardapio.ver','cardapio.editar']},
  {pag:'insumos',  ico:'insumos',  nome:'Insumos',  desc:'Ingredientes, custo e mínimo',         chaves:['insumos.ver','insumos.editar','insumos.custo']},
@@ -832,7 +887,8 @@ const R0=v=>'R$ '+Math.round(v||0).toLocaleString('pt-BR');
 const hojeISO=()=>{const d=new Date();return new Date(d.getTime()-d.getTimezoneOffset()*6e4).toISOString().slice(0,10);};
 const brDate=s=>s?s.slice(8,10)+'/'+s.slice(5,7):'';
 const mesAtual=()=>hojeISO().slice(0,7);
-const qtdBR=v=>Number(v||0).toLocaleString('pt-BR',{maximumFractionDigits:2});
+const qtdBR=v=>Number(v||0).toLocaleString('pt-BR',{maximumFractionDigits:2})
+const dataHoraBR=t=>{if(!t)return '—';const d=new Date(t);if(isNaN(d))return '—';const hj=new Date(),mesmo=d.toDateString()===hj.toDateString();const hh=String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');return (mesmo?'hoje':String(d.getDate()).padStart(2,'0')+'/'+String(d.getMonth()+1).padStart(2,'0'))+' às '+hh;};
 
 let sess=null;try{sess=JSON.parse(localStorage.getItem('sb_sess')||'null');}catch(e){}
 let perfil=null, admin=false, permissoes={};
@@ -1052,6 +1108,7 @@ async function iniciar(){
 
     abrirApp();
     montarNav();aplicarPermissoes();
+    registrarSW().then(()=>{renderAvisos();irParaDaURL();});
     await carregar();
     setInterval(()=>{if(document.visibilityState==='visible')carregar(true);},30000);
     window.addEventListener('online',()=>{el('offBar').classList.remove('on');flush();});
@@ -1169,6 +1226,9 @@ async function carregar(silencioso){
     add('produtos','produtos?select=*&order=nome');
     add('estoque','estoque_lanc?select=*&order=criado_em.desc&limit=3000');
     add('reposicao','reposicao?select=*&order=criado_em.desc&limit=300');
+    if(pode('estoque.ver')||pode('cardapio.ver')){
+      add('preparos','preparos?select=*&order=categoria.asc,nome.asc');
+      add('producoes','v_producoes_ativas?select=*&limit=400');}
     if(pode('cardapio.ver'))                       add('receitas','receitas?select=*');
     if(pode('vender.historico')||pode('painel.ver'))add('vendas','vendas?select=*&order=data.desc&limit=3000');
     if(pode('ajustes.numeros')||pode('painel.ver')) add('config','config?select=*');
@@ -1189,6 +1249,7 @@ async function carregar(silencioso){
     S.vendas=d.vendas||[];S.estoque=d.estoque||[];S.reposicao=d.reposicao||[];
     S.movimentos=d.movimentos||[];S.contas=d.contas||[];S.dividas=d.dividas||[];
     S.equipe=d.equipe||[];
+    S.preparos=d.preparos||[];S.producoes=d.producoes||[];
     const c=(d.config||[]).find(x=>x.chave==='geral');S.cfg=(c&&c.valor)||{};
 
     if(antes!==JSON.stringify(permissoes)+'|'+admin){montarNav();aplicarPermissoes();}
@@ -1273,12 +1334,14 @@ function render(){
   el('hdrsub').textContent=(perfil?perfil.nome:'')+' · '+(admin?'Administrador':'Equipe');
   if(pode('painel.ver'))renderPainel();
   renderVender();renderEstoque();
+  if(pode('estoque.ver')||pode('cardapio.ver'))renderProducao();
   if(pode('compras.ver'))renderCompras();
   if(pode('cardapio.ver'))renderCardapio();
   if(pode('insumos.ver')||pode('insumos.editar'))renderInsumos();
   if(pode('financeiro.ver'))renderDinheiro();
   if(pode('equipe.ver'))renderEquipe();
   if(pode('ajustes.numeros'))carregarCfgInputs();
+  renderAvisos();
   el('minhaConta').innerHTML=perfil?'<table>'+
     '<tr><td>Nome</td><td class="num">'+esc(perfil.nome||'')+'</td></tr>'+
     '<tr><td>E-mail</td><td class="num">'+esc(perfil.email||'')+'</td></tr>'+
@@ -1339,8 +1402,17 @@ function renderPainel(){
     :'<div class="empty">Nenhuma venda lançada neste mês.</div>';
 
   const A=[],mm=num(S.cfg.margemMin)/100;
-  const faltando=S.insumos.filter(i=>statusEstoque(i).c==='bad');
-  if(faltando.length)A.push(['bad','Falta no trailer',faltando.map(i=>i.nome).join(', ')]);
+  const faltando=S.insumos.filter(i=>!ehPreparo(i)&&statusEstoque(i).c==='bad');
+  if(faltando.length)A.push(['bad','Falta no trailer',faltando.map(i=>i.nome).join(', ')+'. Entre em Compras.']);
+  const acabando=S.insumos.filter(i=>!ehPreparo(i)&&statusEstoque(i).c==='warn'&&num(i.estoque_minimo));
+  if(acabando.length)A.push(['warn','Chegando ao fim',acabando.map(i=>i.nome).join(', ')+'. Compre antes de acabar.']);
+  const lotes=(S.producoes||[]).filter(l=>l.status==='ativo');
+  const venc=lotes.filter(l=>l.situacao==='descartar');
+  if(venc.length)A.push(['bad','Preparo vencido',venc.map(l=>l.preparo).join(', ')+'. Descarte antes de abrir. Veja em Produção.']);
+  const perto=lotes.filter(l=>l.situacao==='vence em breve');
+  if(perto.length)A.push(['warn','Vence hoje',perto.map(l=>l.preparo+' (em '+Math.max(0,Math.round(Number(l.horas_restantes||0)))+'h)').join(', ')+'. Use ou prepare outro.']);
+  const semPreparo=(S.preparos||[]).filter(p=>p.insumo_id&&!lotes.some(l=>l.preparo===p.nome));
+  if(semPreparo.length)A.push(['warn','Não tem preparado',semPreparo.map(p=>p.nome).join(', ')+'. Sem isso não dá para montar os lanches.']);
   const pedidos=S.reposicao.filter(r=>r.status==='aberto');
   if(pedidos.length)A.push(['warn','A equipe pediu reposição',pedidos.length+' pedido em aberto. Veja em Compras.']);
   if(!S.insumos.length)A.push(['warn','Comece pelos insumos','Sem eles o sistema não sabe quanto custa o seu produto.']);
@@ -1390,19 +1462,34 @@ function renderVender(){
       :'<div class="empty">Nenhum dia lançado ainda.</div>';}
 }
 
+const ehPreparo=i=>i&&i.tipo==='preparo';
+const insCompra=()=>S.insumos.filter(i=>!ehPreparo(i));
+const insPreparo=()=>S.insumos.filter(ehPreparo);
+
 function renderEstoque(){
   const podePedir=pode('estoque.pedir');
-  el('listaEstoque').innerHTML=S.insumos.length
-    ?S.insumos.map(i=>{const st=statusEstoque(i);
+  const linha=i=>{const st=statusEstoque(i);
       return '<div class="row"><div class="info"><div class="nm">'+esc(i.nome)+
         ' <span class="pill '+st.c+'">'+st.t+'</span></div>'+
         '<div class="mt">Tem '+qtdBR(st.sd)+' '+esc(i.unidade||'un')+
         (num(i.estoque_minimo)?' · mínimo '+qtdBR(i.estoque_minimo):'')+'</div></div>'+
-        (podePedir?'<div class="acts"><button class="btn quiet sm" onclick="pedir(\''+i.id+'\')">Acabando</button></div>':'')+
-        '</div>';}).join('')
+        (podePedir&&!ehPreparo(i)?'<div class="acts"><button class="btn quiet sm" onclick="pedir(\''+i.id+'\')">Acabando</button></div>':'')+
+        '</div>';};
+  const bloco=(titulo,ajuda,arr)=>arr.length
+    ?'<div class="eyebrow" style="margin:4px 0 4px">'+titulo+'</div>'+
+     '<div class="hint" style="margin:0 0 10px">'+ajuda+'</div>'+arr.map(linha).join('')
+    :'';
+  const compra=insCompra(),prep=insPreparo();
+  el('listaEstoque').innerHTML=S.insumos.length
+    ?bloco('Comprado no mercado','Chega de fornecedor. É isto que entra na lista de compras.',compra)+
+     (prep.length&&compra.length?'<div class="divider"></div>':'')+
+     bloco('Preparado aqui','Feito na cozinha a partir dos itens acima. Tem prazo de validade — acompanhe na aba Produção.',prep)
     :'<div class="empty">Nenhum insumo cadastrado.</div>';
 
-  el('eIns').innerHTML=S.insumos.map(i=>'<option value="'+i.id+'">'+esc(i.nome)+'</option>').join('');
+  const opts=a=>a.map(i=>'<option value="'+i.id+'">'+esc(i.nome)+'</option>').join('');
+  el('eIns').innerHTML=
+    (compra.length?'<optgroup label="Comprado no mercado">'+opts(compra)+'</optgroup>':'')+
+    (prep.length?'<optgroup label="Preparado aqui">'+opts(prep)+'</optgroup>':'');
 
   const ult=S.estoque.slice(0,20);
   el('histEstoque').innerHTML=ult.length
@@ -1416,7 +1503,7 @@ function renderEstoque(){
 }
 
 function renderCompras(){
-  const auto=S.insumos.filter(i=>{const st=statusEstoque(i);
+  const auto=S.insumos.filter(i=>{if(ehPreparo(i))return false;const st=statusEstoque(i);
     return st.c==='bad'||(st.c==='warn'&&num(i.estoque_minimo));});
   const pedidos=S.reposicao.filter(r=>r.status==='aberto');
   const ids=new Set(pedidos.map(r=>r.insumo_id));
@@ -1471,9 +1558,14 @@ function renderCardapio(){
 function renderInsumos(){
   const podeEditar=pode('insumos.editar'),vc=verCusto();
   el('listaIng').innerHTML=S.insumos.length
-    ?'<table><tr><th>Insumo</th>'+(vc?'<th class="num">Pacote</th><th class="num">Rende</th>':'')+
+    ?'<table><tr><th>Insumo</th><th>Origem</th>'+(vc?'<th class="num">Pacote</th><th class="num">Rende</th>':'')+
       '<th class="num">Mínimo</th>'+(vc?'<th class="num">Cada</th>':'')+(podeEditar?'<th></th>':'')+'</tr>'+
       S.insumos.map(i=>'<tr><td>'+esc(i.nome)+'</td>'+
+        '<td>'+(podeEditar
+          ?'<select style="padding:7px;font-size:12.5px" onchange="updIngTexto(\''+i.id+'\',\'tipo\',this.value)">'+
+            '<option value="compra"'+(ehPreparo(i)?'':' selected')+'>Mercado</option>'+
+            '<option value="preparo"'+(ehPreparo(i)?' selected':'')+'>Preparado</option></select>'
+          :'<span class="pill mut">'+(ehPreparo(i)?'Preparado':'Mercado')+'</span>')+'</td>'+
         (vc?'<td class="num">'+(podeEditar
           ?'<input style="width:84px;padding:8px;font-size:13.5px" type="number" step="0.01" value="'+(i.preco_pacote??'')+'" onchange="updIng(\''+i.id+'\',\'preco_pacote\',this.value)">'
           :R$(num(i.preco_pacote)))+'</td>'+
@@ -1572,9 +1664,10 @@ function renderEquipe(){
   const gerencia=pode('equipe.gerenciar');
   el('listaEquipe').innerHTML=S.equipe.length
     ?S.equipe.map(p=>{
-      const [c,txt]=situacao(p),eu=p.id===perfil.id;
+      const [c,txt]=situacao(p),eu=p.id===perfil.id,sup=p.super_admin===true;
       return '<div class="row" style="align-items:flex-start"><div class="info">'+
-        '<div class="nm">'+esc(p.nome||p.email)+(eu?' <span class="pill mut">você</span>':'')+'</div>'+
+        '<div class="nm">'+esc(p.nome||p.email)+(eu?' <span class="pill mut">você</span>':'')+
+        (sup?' <span class="pill ok">conta principal</span>':'')+'</div>'+
         '<div class="mt">'+esc(p.email||'')+'</div>'+
         '<div class="mt"><span class="pill '+c+'">'+txt+'</span></div>'+
         (gerencia&&!eu?'<div class="acts" style="margin-top:12px">'+
@@ -1582,7 +1675,8 @@ function renderEquipe(){
           (p.papel!=='admin'
             ?'<button class="btn '+(p.aprovado?'quiet':'')+' sm" onclick="autorizar(\''+p.id+'\','+(!p.aprovado)+')">'+(p.aprovado?'Bloquear':'Autorizar')+'</button>'
             :'')+
-          '<button class="btn quiet sm" onclick="tornarAdmin(\''+p.id+'\',\''+p.papel+'\')">'+(p.papel==='admin'?'Tirar admin':'Tornar admin')+'</button>'+
+          (sup?'':'<button class="btn quiet sm" onclick="tornarAdmin(\''+p.id+'\',\''+p.papel+'\')">'+(p.papel==='admin'?'Tirar admin':'Tornar admin')+'</button>')+
+          (sup?'':'<button class="btn ghost sm" onclick="excluirUsuario(\''+p.id+'\')">Excluir conta</button>')+
           '</div>':'')+
         '</div></div>'+
         '<div id="perm-'+p.id+'" style="display:none"></div>';}).join('')
@@ -1650,6 +1744,232 @@ window.tornarAdmin=async(id,atual)=>{
     await api('perfis?id=eq.'+id,{method:'PATCH',body:{papel:novo},prefer:'return=minimal'});
     carregar();
   }catch(e){alert(traduz(e.message));}};
+
+window.excluirUsuario=async id=>{
+  const p=S.equipe.find(x=>x.id===id);if(!p)return;
+  const nome=p.nome||p.email||'esta pessoa';
+  if(!confirm('Excluir a conta de '+nome+'?\n\nA pessoa perde o acesso na hora e a conta some do sistema. Tudo o que ela lançou (vendas, estoque, financeiro) continua guardado, com o nome dela registrado no histórico.\n\nIsto não tem volta.'))return;
+  if(!confirm('Confirma mesmo? Digite mentalmente o nome: '+nome))return;
+  try{
+    await api('rpc/excluir_usuario',{method:'POST',body:{p_id:id},prefer:'return=minimal'});
+    alert('Conta de '+nome+' excluída. O histórico dela continua no sistema.');
+    carregar();
+  }catch(e){alert(traduz(e.message));}};
+
+/* =====================================================================
+   PRODUÇÃO — o que foi preparado e até quando serve
+   ===================================================================== */
+function prepDe(id){return S.preparos.find(p=>p.id===id);}
+function unLabel(u){return u==='g'?'g':u==='ml'?'ml':u==='kg'?'kg':u==='l'?'L':'un';}
+function prazoTxt(l){
+  if(l.situacao==='consumido')return['mut','acabou'];
+  if(l.situacao==='descartado')return['mut','descartado'];
+  if(l.situacao==='sem validade')return['mut','sem prazo definido'];
+  if(l.situacao==='descartar')return['bad','vencido · descartar'];
+  const h=Number(l.horas_restantes||0);
+  if(l.situacao==='vence em breve')return['warn','vence em '+(h<1?'menos de 1 hora':Math.round(h)+'h')];
+  return['ok',h>=24?'serve por mais '+Math.floor(h/24)+' dia'+(h>=48?'s':''):'serve por mais '+Math.round(h)+'h'];}
+
+function renderProducao(){
+  const podeLancar=pode('estoque.entrada')||pode('cardapio.editar');
+  const ativos=(S.producoes||[]).filter(l=>l.status==='ativo');
+  const vencidos=ativos.filter(l=>l.situacao==='descartar');
+
+  let topo='';
+  if(vencidos.length)topo='<div class="note warn">'+ico('aviso')+'<div class="body"><b>'+vencidos.length+
+    (vencidos.length===1?' preparo passou do prazo':' preparos passaram do prazo')+'</b>Confira antes de abrir. O que estiver vencido precisa ser descartado.</div></div>';
+
+  el('listaProducao').innerHTML=topo+(ativos.length
+    ?ativos.map(l=>{const [c,txt]=prazoTxt(l);
+      return '<div class="row"><div class="info">'+
+        '<div class="nm">'+esc(l.preparo)+' <span class="pill '+c+'">'+txt+'</span></div>'+
+        '<div class="mt">'+qtdBR(l.qtd)+' '+esc(unLabel(l.unidade))+' · feito '+dataHoraBR(l.produzido_em)+
+        (l.criado_por_nome?' por '+esc(l.criado_por_nome):'')+'</div>'+
+        (l.validade_em?'<div class="mt">Usar até '+dataHoraBR(l.validade_em)+'</div>':'')+
+        '</div>'+
+        (podeLancar?'<div class="acts">'+
+          '<button class="btn quiet sm" onclick="fecharLote(\''+l.id+'\',\'consumido\')">Acabou</button>'+
+          '<button class="btn ghost sm" onclick="fecharLote(\''+l.id+'\',\'descartado\')">Descartar</button>'+
+        '</div>':'')+
+        '</div>';}).join('')
+    :'<div class="empty">Nada preparado no momento.</div>');
+  pintarIcones(el('listaProducao'));
+
+  el('prPreparo').innerHTML=S.preparos.length
+    ?S.preparos.map(p=>'<option value="'+p.id+'">'+esc(p.nome)+'</option>').join('')
+    :'<option value="">Nenhum preparo cadastrado</option>';
+  mostrar('cardProduzir',podeLancar&&S.preparos.length>0);
+  prPrever();
+
+  el('listaPreparos').innerHTML=S.preparos.length
+    ?S.preparos.map(p=>'<div class="row" style="align-items:flex-start"><div class="info">'+
+        '<div class="nm">'+esc(p.nome)+' <span class="pill mut">'+esc(p.categoria||'')+'</span></div>'+
+        (p.validade_horas?'<div class="mt">Dura '+(p.validade_horas>=24?Math.round(p.validade_horas/24)+' dia'+(p.validade_horas>=48?'s':''):p.validade_horas+'h')+' depois de pronto</div>':'')+
+        '<div class="acts" style="margin-top:10px"><button class="btn quiet sm" onclick="verPreparo(\''+p.id+'\')">Ver receita</button></div>'+
+        '</div></div><div id="prep-'+p.id+'" style="display:none"></div>').join('')
+    :'<div class="empty">Nenhuma receita cadastrada.</div>';
+  pintarIcones(el('listaPreparos'));
+}
+
+window.verPreparo=id=>{
+  const box=el('prep-'+id);
+  if(box.style.display!=='none'){box.style.display='none';box.innerHTML='';return;}
+  const p=prepDe(id);if(!p)return;
+  let h='<div class="divider"></div>';
+  if(p.ingredientes)h+='<div class="eyebrow" style="margin-bottom:8px">Ingredientes</div><div class="mt" style="white-space:pre-line;margin-bottom:16px">'+esc(p.ingredientes)+'</div>';
+  if(p.modo_preparo)h+='<div class="eyebrow" style="margin-bottom:8px">Modo de preparo</div><div class="mt" style="white-space:pre-line">'+esc(p.modo_preparo)+'</div>';
+  if(p.dicas)h+='<div class="note warn" style="margin-top:16px">'+ico('aviso')+'<div class="body"><b>Atenção</b>'+esc(p.dicas)+'</div></div>';
+  h+='<button class="btn ghost" style="margin-top:14px" onclick="verPreparo(\''+id+'\')">Fechar</button>';
+  box.innerHTML=h;box.style.display='block';pintarIcones(box);
+  box.scrollIntoView({behavior:'smooth',block:'nearest'});};
+
+function prPrever(){
+  const p=prepDe(el('prPreparo').value);
+  el('prPrev').textContent=p&&p.validade_horas
+    ?'Este preparo vale '+(p.validade_horas>=24?Math.round(p.validade_horas/24)+' dia'+(p.validade_horas>=48?'s':''):p.validade_horas+' horas')+' depois de pronto. O sistema avisa quando estiver na hora de descartar.'
+    :'Sem prazo definido para este preparo.';}
+
+el('prPreparo').onchange=prPrever;
+
+el('btnProduzir').onclick=async()=>{
+  const preparo_id=el('prPreparo').value,q=n(el('prQtd').value);
+  if(!preparo_id){alert('Escolha o que foi preparado.');return;}
+  if(q<=0){alert('Informe quanto foi preparado.');return;}
+  const p=prepDe(preparo_id);
+  try{
+    await api('producoes',{method:'POST',prefer:'return=minimal',body:[{
+      preparo_id,qtd:q,unidade:el('prUn').value,
+      obs:el('prObs').value.trim()||null,criado_por:sess.user.id}]});
+    if(p&&p.insumo_id)
+      await api('estoque_lanc',{method:'POST',prefer:'return=minimal',body:[{
+        insumo_id:p.insumo_id,tipo:'entrada',qtd:q,
+        obs:'produção na cozinha',criado_por:sess.user.id}]});
+    el('prQtd').value='';el('prObs').value='';
+    carregar();
+  }catch(e){alert('Não consegui: '+traduz(e.message));}};
+
+window.fecharLote=async(id,status)=>{
+  const l=(S.producoes||[]).find(x=>x.id===id);if(!l)return;
+  let perda=0;
+  if(status==='descartado'){
+    const r=prompt('Quanto está sendo jogado fora? ('+unLabel(l.unidade)+')\n\nDeixe como está se for o lote inteiro.',l.qtd);
+    if(r===null)return;
+    perda=n(r);
+    if(perda<0){alert('Quantidade inválida.');return;}
+  }else{
+    if(!confirm('Marcar "'+l.preparo+'" como acabado?'))return;}
+  try{
+    await api('producoes?id=eq.'+id,{method:'PATCH',prefer:'return=minimal',body:{status}});
+    const p=(S.preparos||[]).find(x=>x.nome===l.preparo);
+    if(status==='descartado'&&perda>0&&p&&p.insumo_id)
+      await api('estoque_lanc',{method:'POST',prefer:'return=minimal',body:[{
+        insumo_id:p.insumo_id,tipo:'perda',qtd:perda,
+        obs:'descarte por validade',criado_por:sess.user.id}]});
+    carregar();
+  }catch(e){alert(traduz(e.message));}};
+
+/* =====================================================================
+   AVISOS NO CELULAR (notificação push)
+   ===================================================================== */
+let swReg=null;
+const temPush=()=>('serviceWorker' in navigator)&&('PushManager' in window)&&('Notification' in window);
+const ehIOS=()=>/iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+const instalado=()=>window.matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
+
+function b64ToU8(base64){
+  const pad='='.repeat((4-base64.length%4)%4);
+  const b=(base64+pad).replace(/-/g,'+').replace(/_/g,'/');
+  const raw=atob(b),arr=new Uint8Array(raw.length);
+  for(let i=0;i<raw.length;i++)arr[i]=raw.charCodeAt(i);
+  return arr;}
+
+async function registrarSW(){
+  if(!temPush())return null;
+  try{swReg=await navigator.serviceWorker.register('/sw.js',{scope:'/'});
+    await navigator.serviceWorker.ready;return swReg;}
+  catch(e){console.warn('sw',e);return null;}}
+
+async function assinaturaAtual(){
+  if(!swReg)return null;
+  try{return await swReg.pushManager.getSubscription();}catch(e){return null;}}
+
+async function renderAvisos(){
+  const box=el('avisoStatus'),btns=el('avisoBotoes'),ajuda=el('avisoAjuda');
+  if(!box)return;
+
+  if(!temPush()){
+    box.innerHTML='<div class="note warn">'+ico('aviso')+'<div class="body"><b>Este navegador não recebe avisos</b>Abra o sistema no Chrome (Android) ou no Safari (iPhone) para ligar as notificações.</div></div>';
+    btns.innerHTML='';ajuda.textContent='';pintarIcones(box);return;}
+
+  if(ehIOS()&&!instalado()){
+    box.innerHTML='<div class="note warn">'+ico('aviso')+'<div class="body"><b>Falta instalar na tela de início</b>No iPhone, o aviso só funciona com o sistema instalado como aplicativo.</div></div>';
+    btns.innerHTML='';
+    ajuda.innerHTML='No Safari: toque no botão de compartilhar, escolha <b>Adicionar à Tela de Início</b>, abra pelo ícone que aparecer e volte aqui.';
+    pintarIcones(box);return;}
+
+  const sub=await assinaturaAtual();
+  const perm=Notification.permission;
+
+  if(perm==='denied'){
+    box.innerHTML='<div class="note bad">'+ico('alerta')+'<div class="body"><b>Você bloqueou as notificações</b>O navegador está barrando. Precisa liberar nas configurações do site.</div></div>';
+    btns.innerHTML='';
+    ajuda.innerHTML='No Chrome: toque no cadeado ao lado do endereço, entre em <b>Permissões</b> e libere <b>Notificações</b>. Depois volte aqui.';
+    pintarIcones(box);return;}
+
+  if(sub){
+    box.innerHTML='<div class="note ok">'+ico('check')+'<div class="body"><b>Ligado neste aparelho</b>Você recebe aviso de vencimento, falta de insumo e movimentação de acesso.</div></div>';
+    btns.innerHTML='<button class="btn quiet" onclick="testarAviso()">Enviar um aviso de teste</button>'+
+      '<button class="btn ghost" style="margin-top:10px" onclick="desligarAvisos()">Desligar neste aparelho</button>';
+    ajuda.textContent='Vale só para este aparelho. Se você usa o sistema no celular e no computador, ligue nos dois.';
+  }else{
+    box.innerHTML='<div class="note warn">'+ico('sino')+'<div class="body"><b>Desligado neste aparelho</b>Você só vê os avisos quando abre o sistema.</div></div>';
+    btns.innerHTML='<button class="btn" onclick="ligarAvisos()">Ligar avisos neste aparelho</button>';
+    ajuda.textContent='O navegador vai pedir sua permissão. Toque em Permitir.';}
+  pintarIcones(box);}
+
+window.ligarAvisos=async()=>{
+  try{
+    if(!swReg)await registrarSW();
+    if(!swReg){alert('Não consegui preparar as notificações neste navegador.');return;}
+    const perm=await Notification.requestPermission();
+    if(perm!=='granted'){renderAvisos();return;}
+    const chave=await api('rpc/vapid_publica',{method:'POST',body:{}});
+    if(!chave){alert('As notificações ainda não foram configuradas no servidor.');return;}
+    const sub=await swReg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:b64ToU8(String(chave))});
+    const j=sub.toJSON();
+    await api('push_assinaturas',{method:'POST',prefer:'resolution=merge-duplicates,return=minimal',body:[{
+      perfil_id:sess.user.id,endpoint:j.endpoint,p256dh:j.keys.p256dh,auth:j.keys.auth,
+      aparelho:(navigator.userAgent||'').slice(0,180),ativo:true}]});
+    await renderAvisos();
+    testarAviso();
+  }catch(e){alert('Não consegui ligar: '+traduz(e.message));renderAvisos();}};
+
+window.desligarAvisos=async()=>{
+  if(!confirm('Parar de receber avisos neste aparelho?'))return;
+  try{
+    const sub=await assinaturaAtual();
+    if(sub){
+      await api('push_assinaturas?endpoint=eq.'+encodeURIComponent(sub.endpoint),{method:'DELETE',prefer:'return=minimal'}).catch(()=>{});
+      await sub.unsubscribe();}
+    renderAvisos();
+  }catch(e){alert(traduz(e.message));}};
+
+window.testarAviso=async()=>{
+  try{
+    const r=await fetch(URL_+'/functions/v1/avisar',{method:'POST',headers:hdr(),body:JSON.stringify({modo:'teste'})});
+    const d=await r.json().catch(()=>({}));
+    if(!r.ok)alert('O servidor recusou: '+(d.erro||r.status));
+    else if(!d.enviados)alert('Nenhum aviso saiu. Motivo: '+(d.motivo||'desconhecido'));
+  }catch(e){alert('Não consegui falar com o servidor: '+traduz(e.message));}};
+
+/* clique na notificação abre a aba certa */
+if('serviceWorker' in navigator)
+  navigator.serviceWorker.addEventListener('message',ev=>{
+    if(ev.data&&ev.data.tipo==='ir'&&ev.data.pagina)irPara(ev.data.pagina);});
+
+function irParaDaURL(){
+  const p=new URLSearchParams(location.search).get('ir');
+  if(p&&el('p-'+p)){irPara(p);history.replaceState({},'',location.pathname);}}
 
 /* =====================================================================
    AÇÕES
@@ -1731,10 +2051,14 @@ el('btnAddIng').onclick=async()=>{
   const raw=el('iNome').value.trim();
   if(!raw){alert('Dê um nome ao insumo.');return;}
   const linhas=raw.split(',').map(s=>s.trim()).filter(Boolean).map(nome=>({nome,
-    preco_pacote:n(el('iPreco').value),rende:n(el('iRende').value)||1,estoque_minimo:n(el('iMin').value)}));
+    preco_pacote:n(el('iPreco').value),rende:n(el('iRende').value)||1,estoque_minimo:n(el('iMin').value),
+    tipo:el('iTipo').value||'compra'}));
   try{await api('insumos',{method:'POST',body:linhas,prefer:'return=minimal'});
-   ['iNome','iPreco','iRende','iMin'].forEach(i=>el(i).value='');el('iPrev').textContent='';carregar();
+   ['iNome','iPreco','iRende','iMin'].forEach(i=>el(i).value='');el('iTipo').value='compra';el('iPrev').textContent='';carregar();
   }catch(e){alert('Não consegui: '+traduz(e.message));}};
+window.updIngTexto=async(id,campo,v)=>{
+  try{await api('insumos?id=eq.'+id,{method:'PATCH',body:{[campo]:v},prefer:'return=minimal'});
+   const i=insDe(id);if(i)i[campo]=v;render();}catch(e){alert(traduz(e.message));}};
 window.updIng=async(id,campo,v)=>{
   try{await api('insumos?id=eq.'+id,{method:'PATCH',body:{[campo]:n(v)},prefer:'return=minimal'});
    const i=insDe(id);if(i)i[campo]=n(v);render();}catch(e){alert(traduz(e.message));}};
