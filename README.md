@@ -7,7 +7,7 @@ Sistema de gestão do trailer: vendas, cardápio com ficha técnica, estoque, li
 | Arquivo | O que é |
 |---|---|
 | `index.html` | O sistema. É este que abre no endereço principal. |
-| `casa.html` | Painel financeiro pessoal do casal. Separado do negócio de propósito. |
+| `casal.html` | Painel financeiro pessoal do casal. Separado do negócio de propósito. |
 | `banco-de-dados.sql` | Estrutura do banco. Já aplicada — fica como cópia de segurança. |
 
 ## Como funciona
