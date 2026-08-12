@@ -10,6 +10,7 @@ Sistema de gestão do trailer: vendas, cardápio com ficha técnica, estoque, pr
 | `sw.js` | Service worker. Cuida das notificações no celular. |
 | `manifest.json` | Deixa o sistema instalável como aplicativo. |
 | `icone-192.png` / `icone-512.png` | Ícone do app e das notificações. |
+| `pedir.html` | Checkout público. É onde o cliente monta o pedido. |
 | `casal.html` | Painel financeiro pessoal do casal. Separado do negócio de propósito. |
 | `banco-de-dados.sql` | Estrutura do banco. Já aplicado — fica como cópia de segurança. |
 
@@ -50,17 +51,59 @@ Notificação push nativa do navegador — gratuita, sem serviço contratado. Ch
 
 O que gera aviso: preparo vencido, preparo vencendo nas próximas horas, preparo que não tem lote pronto, insumo abaixo do mínimo, pedido de reposição da equipe, cadastro novo aguardando autorização e conta com poder de administrador.
 
+## Pedidos e checkout
+
+O cliente abre `/pedir.html`, monta o pedido e escolhe retirada ou entrega. O pedido cai direto na aba **Pedidos**, com aviso no celular da equipe e som no aparelho que estiver com a fila aberta.
+
+**Formas de pagamento**, cada uma ligada ou desligada em Ajustes:
+
+- **Na entrega ou retirada** — cartão na maquininha, Pix na hora ou dinheiro com troco. Mantém as taxas que o negócio já tem.
+- **Pix antecipado** — mostra o código copia e cola gerado na hora, com valor certo. O pedido só vai para a cozinha depois que alguém confirmar o recebimento.
+- **Online** — cartão aprovado antes do preparo, via Mercado Pago. Precisa da credencial cadastrada em Ajustes.
+
+A credencial do provedor fica na tabela `segredos`, que tem RLS ligado e nenhuma política: nem administrador lê pelo aplicativo, só o servidor.
+
+O preço nunca vem do navegador. A função `criar-pedido` busca o valor de cada item no banco e recalcula o total antes de gravar.
+
+**Fila:** novo → preparando → pronto → saiu (só entrega) → entregue. Cada pedido imprime uma notinha de 80mm pela impressora do aparelho.
+
+## Entregas
+
+O entregador entra com a permissão **Trabalhar como entregador** e enxerga só a aba Entregas: as entregas livres e as dele. Nada de financeiro, custo ou cardápio.
+
+Fluxo: pedido fica pronto → entregador toca em **Pegar** (grava quem e a hora da saída) → **Cliente recebeu** (grava a hora da entrega, quanto recebeu e em qual forma). A venda entra no sistema automaticamente, com hora e canal `entrega`.
+
+O administrador acompanha quem está na rua e há quantos minutos, e fecha o **acerto de caixa** — o dinheiro que cada entregador recebeu na mão e ainda não prestou contas, separado por dinheiro, cartão e Pix.
+
+## Compras e fornecedores
+
+Cada compra registra onde foi feita, o preço de cada pacote e quanto rende. Ao salvar, três coisas acontecem sozinhas: o estoque entra, o custo do insumo se atualiza e a saída vai para o financeiro.
+
+Com isso o sistema monta o **comparador**: para cada insumo, o último preço de cada fornecedor já dividido pelo rendimento, com o mais barato destacado e a economia por unidade. Mais o total gasto em cada estabelecimento e a fatia de cada um.
+
+## Rastreio
+
+Toda inserção, alteração e exclusão nas tabelas do negócio fica gravada em `auditoria`, com quem fez, quando, e o antes e depois de cada campo. A aba só aparece para a conta principal — nem outro administrador enxerga.
+
+## Mural de avisos
+
+O sino no cabeçalho guarda o histórico de tudo que o sistema avisou, com contador de não lidos. Tocar em um aviso leva direto para a aba onde o problema está.
+
 ## Banco de dados
 
-**Tabelas:** `perfis`, `insumos`, `produtos`, `receitas`, `preparos`, `producoes`, `vendas`, `estoque_lanc`, `reposicao`, `movimentos`, `contas_fixas`, `dividas`, `config`, `push_assinaturas`, `avisos_enviados`, `segredos`
+**Tabelas:** `perfis`, `insumos`, `produtos`, `receitas`, `preparos`, `producoes`, `pedidos`, `pedido_itens`, `acertos`, `fornecedores`, `compras`, `compra_itens`, `vendas`, `estoque_lanc`, `reposicao`, `movimentos`, `contas_fixas`, `dividas`, `config`, `push_assinaturas`, `avisos_enviados`, `mural`, `mural_lido`, `auditoria`, `segredos`
 
-**Relatórios prontos:** `v_custo_produto`, `v_estoque`, `v_vendas_dia`, `v_vendas_mes`, `v_ranking_produtos`, `v_producoes_ativas`
+**Relatórios prontos:** `v_custo_produto`, `v_estoque`, `v_vendas_dia`, `v_vendas_mes`, `v_ranking_produtos`, `v_producoes_ativas`, `v_acerto_aberto`, `v_comparador`, `v_preco_fornecedor`, `v_gasto_fornecedor`
+
+**Vendas:** cada venda grava `momento` (data e hora exatas), `canal` (balcão, site, entrega, telefone), quem lançou e o preço praticado. A coluna `data` continua existindo para os relatórios por dia. Pedido marcado como entregue vira venda sozinho.
 
 **Segurança:** funções `seg.e_admin()`, `seg.liberado()` e `seg.pode(chave)` fora do schema público, usadas pelas políticas de RLS de todas as tabelas. A tabela `segredos` tem RLS ligado e nenhuma política — só o servidor lê.
 
 **Estoque:** registrado como lista de movimentos (somente acréscimo), nunca como número sobrescrito. O saldo é a soma. Assim dois aparelhos lançando ao mesmo tempo não se atropelam.
 
-**Edge Function `avisar`:** monta e dispara as notificações. Exige token do agendador ou usuário logado.
+**Edge Functions:** `avisar` monta e dispara as notificações; `criar-pedido` recebe o pedido do checkout e valida os preços no servidor; `pagamento-webhook` confirma o pagamento na fonte antes de liberar a cozinha. Nenhuma delas aceita chamada sem credencial.
+
+**Visitante:** o site público enxerga apenas `cardapio_publico` e a configuração da loja. Não alcança pedidos, clientes, custos nem nada da equipe.
 
 ## Regras que o sistema respeita
 
@@ -75,6 +118,8 @@ O que gera aviso: preparo vencido, preparo vencendo nas próximas horas, preparo
 |---|---|---|
 | v1.0 | 10/08/2026 | Primeira versão no ar: login, papéis, vendas, cardápio, ficha técnica, estoque com baixa automática, lista de compras, financeiro, equipe |
 | v1.1 | 10/08/2026 | Aba Produção com controle de validade; separação entre insumo de compra e de preparo; exclusão de usuário com administrador principal protegido; notificações push no celular; cardápio e fichas técnicas carregados do catálogo |
+| v1.3 | 12/08/2026 | Entregador com registro de saída e chegada, acerto de caixa e venda automática na entrega; filtro de período no painel com faixa de horário; venda registrada uma a uma com hora; fornecedores, compras e comparador de preços; trilha de auditoria restrita à conta principal |
+| v1.2 | 10/08/2026 | Mural de avisos no sino do cabeçalho; aba Pedidos com fila de cozinha, pedido no balcão e notinha de 80mm; checkout público em `/pedir.html` com retirada ou entrega e três formas de pagamento |
 
 ## Como atualizar
 
