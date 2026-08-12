@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#150408">
+<title>Dog do Rubão · O verdadeiro gourmet</title>
+<meta name="description" content="Hot dogs gourmet e sanduíches artesanais no Lago Norte, Brasília. Peça pelo site, retire no trailer ou receba em casa.">
+<meta property="og:title" content="Dog do Rubão · O verdadeiro gourmet">
+<meta property="og:description" content="Hot dogs gourmet e sanduíches artesanais. Lago Norte, Brasília.">
+<meta property="og:image" content="/fotos/dog-cheddar.webp">
+<link rel="icon" href="/icone-192.png">
+<link rel="apple-touch-icon" href="/icone-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lora:wght@600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#150408;--card:#1f0a0f;--card2:#2a0e14;--line:#3a1a20;--txt:#f6ecea;--mut:#b09a97;--acc:#e0443e;--ok:#3f9d6a}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:var(--bg);color:var(--txt);font-family:Inter,system-ui,sans-serif;font-size:15px;line-height:1.55}
+img{display:block;max-width:100%}
+a{color:inherit;text-decoration:none}
+.wrap{max-width:560px;margin:0 auto;padding:0 18px 60px}
+
+.capa{position:relative;text-align:center;padding:34px 18px 24px;
+  background:radial-gradient(120% 90% at 50% 0%,#2d0b12 0%,var(--bg) 72%)}
+.capa .marca{width:104px;height:104px;border-radius:50%;margin:0 auto;object-fit:cover;
+  box-shadow:0 0 0 3px rgba(224,68,62,.3),0 12px 30px rgba(0,0,0,.5)}
+h1{font-family:Lora,Georgia,serif;font-size:30px;margin:14px 0 4px}
+.tag{font-size:10.5px;letter-spacing:.24em;text-transform:uppercase;color:var(--acc);font-weight:700}
+.local{color:var(--mut);font-size:13px;margin-top:10px}
+.selo{display:inline-flex;align-items:center;gap:7px;margin-top:14px;padding:7px 15px;border-radius:999px;
+  font-size:13px;font-weight:600}
+.selo.on{background:rgba(63,157,106,.16);color:#7fd3a4;border:1px solid rgba(63,157,106,.42)}
+.selo.off{background:rgba(224,68,62,.14);color:#f0a09c;border:1px solid rgba(224,68,62,.42)}
+.selo i{width:7px;height:7px;border-radius:50%;background:currentColor;display:block}
+
+.principal{display:flex;align-items:center;gap:13px;background:var(--acc);color:#fff;
+  border-radius:16px;padding:17px 18px;margin:22px 0 12px;font-weight:700;font-size:16.5px;
+  box-shadow:0 10px 28px rgba(224,68,62,.35)}
+.principal .seta{margin-left:auto;font-size:20px;opacity:.85}
+.principal small{display:block;font-weight:500;font-size:12.5px;opacity:.9;margin-top:2px}
+
+.link{display:flex;align-items:center;gap:13px;background:var(--card);border:1px solid var(--line);
+  border-radius:14px;padding:15px 16px;margin-bottom:10px;transition:.15s}
+.link:active{transform:scale(.99);border-color:var(--acc)}
+.link .ic{width:38px;height:38px;border-radius:11px;background:var(--card2);display:grid;place-items:center;flex-shrink:0}
+.link .tx{flex:1;min-width:0}
+.link .tx b{display:block;font-size:14.5px;font-weight:600}
+.link .tx span{color:var(--mut);font-size:12.5px}
+.link .seta{color:var(--mut);font-size:17px}
+
+h2{font-family:Lora,serif;font-size:19px;margin:34px 0 12px}
+.txt{color:var(--mut);font-size:14px}
+.txt b{color:var(--txt)}
+
+.tira{display:flex;gap:10px;overflow-x:auto;scrollbar-width:none;margin:0 -18px;padding:0 18px 4px}
+.tira::-webkit-scrollbar{display:none}
+.tira figure{margin:0;flex-shrink:0;width:172px}
+.tira img{width:172px;height:97px;object-fit:cover;border-radius:12px;border:1px solid var(--line)}
+.tira figcaption{font-size:12.5px;margin-top:7px}
+.tira .pr{color:var(--acc);font-weight:700;font-size:12.5px}
+
+.pilar{display:flex;gap:12px;padding:13px 0;border-bottom:1px solid var(--line)}
+.pilar:last-child{border:0}
+.pilar .n{width:26px;height:26px;border-radius:50%;background:var(--card2);border:1px solid var(--line);
+  color:var(--acc);font-size:12px;font-weight:700;display:grid;place-items:center;flex-shrink:0;margin-top:2px}
+.pilar b{display:block;font-size:14.5px}
+.pilar span{color:var(--mut);font-size:13px}
+
+.horario{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:6px 16px}
+.horario .l{display:flex;justify-content:space-between;padding:10px 0;font-size:14px;border-bottom:1px solid var(--line)}
+.horario .l:last-child{border:0}
+.horario .l.hoje{color:var(--acc);font-weight:700}
+
+.estrelas{display:flex;gap:6px;justify-content:center;margin:14px 0 6px}
+.estrelas button{background:none;border:0;font-size:34px;line-height:1;cursor:pointer;color:#4a2a2e;
+  transition:.12s;padding:0}
+.estrelas button.on{color:#f0b429;transform:scale(1.06)}
+textarea{width:100%;padding:13px;border-radius:12px;border:1px solid var(--line);background:var(--card2);
+  color:var(--txt);font-size:15px;font-family:inherit;resize:vertical;margin-top:10px}
+.btn{width:100%;padding:14px;border:0;border-radius:12px;background:var(--acc);color:#fff;
+  font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;margin-top:12px}
+.btn.quiet{background:var(--card2);border:1px solid var(--line);color:var(--txt)}
+.rodape{text-align:center;color:var(--mut);font-size:12px;padding-top:34px}
+.rodape .cnpj{opacity:.6;margin-top:6px;font-size:11px}
+</style>
+</head>
+<body>
+
+<div class="capa">
+  <img class="marca" src="/icone-192.png" alt="Dog do Rubão">
+  <h1>Dog do Rubão</h1>
+  <div class="tag">O verdadeiro gourmet</div>
+  <div class="local">Hot dogs gourmet e sanduíches artesanais<br>SHIN CA 5 · Lago Norte · Brasília</div>
+  <div id="selo"></div>
+</div>
+
+<div class="wrap">
+
+  <a class="principal" href="/">
+    <span>🌭</span>
+    <span>Fazer meu pedido<small id="subPedido">Cardápio completo, retirada ou entrega</small></span>
+    <span class="seta">→</span>
+  </a>
+
+  <a class="link" id="linkWhats" href="#">
+    <span class="ic">💬</span>
+    <span class="tx"><b>Chamar no WhatsApp</b><span>Dúvidas, encomendas e eventos</span></span>
+    <span class="seta">→</span>
+  </a>
+
+  <a class="link" href="https://instagram.com/dogdorubao" target="_blank" rel="noopener">
+    <span class="ic">📸</span>
+    <span class="tx"><b>@dogdorubao</b><span>Bastidores e novidades</span></span>
+    <span class="seta">→</span>
+  </a>
+
+  <a class="link" id="linkMapa" href="#" target="_blank" rel="noopener">
+    <span class="ic">📍</span>
+    <span class="tx"><b>Como chegar</b><span>SHIN CA 5, Lago Norte, Brasília</span></span>
+    <span class="seta">→</span>
+  </a>
+
+  <h2>Os queridinhos da casa</h2>
+  <div class="tira" id="tira"></div>
+
+  <h2>Por que é diferente</h2>
+  <div class="txt" style="margin-bottom:12px">
+    Um trailer pequeno, uma obsessão grande: fazer hot dog do jeito que a gente gostaria de comer.
+  </div>
+  <div class="pilar"><span class="n">1</span><span><b>Pão especial de 20cm</b>
+    <span>Bem macio, do tamanho certo para receber duas salsichas inteiras.</span></span></div>
+  <div class="pilar"><span class="n">2</span><span><b>Duas salsichas, sempre</b>
+    <span>Enfileiradas de ponta a ponta, preenchendo o pão inteiro. Sem meia porção.</span></span></div>
+  <div class="pilar"><span class="n">3</span><span><b>Molhos e batata chips artesanais</b>
+    <span>Feitos por nós, com as nossas próprias receitas. Nada de pote pronto.</span></span></div>
+  <div class="pilar"><span class="n">4</span><span><b>Salsicha ou linguiça, você escolhe</b>
+    <span>No Cheddar, no Indiano e no Dog'Alho, sem custo adicional.</span></span></div>
+
+  <h2>Quando abrimos</h2>
+  <div class="horario" id="horario"></div>
+
+  <h2>O que você achou?</h2>
+  <div class="txt">Sua opinião ajuda a gente a melhorar. Leva menos de um minuto.</div>
+  <div class="estrelas" id="estrelas">
+    <button data-n="1">★</button><button data-n="2">★</button><button data-n="3">★</button>
+    <button data-n="4">★</button><button data-n="5">★</button>
+  </div>
+  <div class="txt" style="text-align:center;font-size:13px" id="notaTxt">Toque nas estrelas</div>
+  <div id="boxAval" style="display:none">
+    <textarea id="avComent" rows="3" placeholder="Conte o que achou (opcional)"></textarea>
+    <button class="btn" id="btnAvaliar">Enviar avaliação</button>
+  </div>
+  <div id="obrigado" style="display:none" class="txt" style="text-align:center">
+    <div style="text-align:center;padding:16px 0"><b style="color:var(--ok)">Obrigado!</b><br>Sua avaliação foi registrada.</div>
+  </div>
+
+  <div class="rodape">
+    <div>Dog do Rubão · O verdadeiro gourmet</div>
+    <div class="cnpj">CNPJ 68.211.347/0001-17</div>
+  </div>
+</div>
+
+<script>
+const URL_="https://svyrayxaprdooqqccjar.supabase.co";
+const KEY_="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN2eXJheXhhcHJkb29xcWNjamFyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYzMjc3NTAsImV4cCI6MjEwMTkwMzc1MH0.D3SntcSVj7xbTQyJYQjTHwCzDQD41SwLYPmHljPgPk8";
+const hdr={'apikey':KEY_,'Authorization':'Bearer '+KEY_,'Content-Type':'application/json'};
+const el=id=>document.getElementById(id);
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const RS=v=>'R$ '+Number(v||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
+
+const DESTAQUES=['DOG CHEDDAR','DOG TRADICIONAL','CHORIPAN','CONTRA-FILÉ ACEBOLADO','DOG INDIANO','VEGETARIANO'];
+const HORARIOS=[['Domingo',null],['Segunda',null],['Terça','18h às 23h'],['Quarta','18h às 23h'],
+  ['Quinta','18h às 23h'],['Sexta','18h às 00h'],['Sábado','18h às 00h']];
+
+async function iniciar(){
+  let LOJA={},PROD=[];
+  try{
+    const [rl,rc]=await Promise.all([
+      fetch(URL_+'/rest/v1/rpc/loja_config',{method:'POST',headers:hdr,body:'{}'}),
+      fetch(URL_+'/rest/v1/cardapio_publico?select=nome,preco,foto,descricao',{headers:hdr})]);
+    LOJA=await rl.json()||{}; PROD=await rc.json()||[];
+  }catch(e){}
+
+  const aberto=LOJA.aberto===true;
+  el('selo').innerHTML='<div class="selo '+(aberto?'on':'off')+'"><i></i>'+
+    (aberto?'Aberto agora':'Fechado no momento')+'</div>';
+  el('subPedido').textContent=aberto
+    ?'Cardápio completo · pronto em ~'+(Number(LOJA.tempo_preparo)||25)+' min'
+    :'Veja o cardápio e peça quando abrirmos';
+
+  const zap=String(LOJA.whatsapp||'5561991936882').replace(/\D/g,'');
+  el('linkWhats').href='https://wa.me/'+zap+'?text='+encodeURIComponent('Olá! Vim pelo Instagram.');
+  const end=LOJA.endereco||'SHIN CA 5, Lago Norte, Brasília';
+  el('linkMapa').href='https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(end);
+
+  const destaques=DESTAQUES.map(n=>PROD.find(p=>p.nome===n)).filter(p=>p&&p.foto);
+  el('tira').innerHTML=(destaques.length?destaques:PROD.filter(p=>p.foto).slice(0,6)).map(p=>
+    '<figure><a href="/"><img src="'+esc(p.foto)+'" alt="'+esc(p.nome)+'" loading="lazy">'+
+    '<figcaption>'+esc(p.nome)+'<div class="pr">'+RS(p.preco)+'</div></figcaption></a></figure>').join('');
+
+  const hoje=new Date().getDay();
+  el('horario').innerHTML=HORARIOS.map((h,i)=>
+    '<div class="l'+(i===hoje?' hoje':'')+'"><span>'+h[0]+'</span><span>'+(h[1]||'Fechado')+'</span></div>').join('');
+}
+
+/* ---------------------------------------------------------- avaliação */
+let nota=0;
+document.querySelectorAll('#estrelas button').forEach(b=>b.onclick=()=>{
+  nota=+b.dataset.n;
+  document.querySelectorAll('#estrelas button').forEach(x=>x.classList.toggle('on',+x.dataset.n<=nota));
+  el('notaTxt').textContent=['','Que pena. Conta o que houve?','Vamos melhorar. Onde erramos?',
+    'Obrigado. O que faltou?','Que bom! O que mais gostou?','Uhul! Conta pra gente'][nota];
+  el('boxAval').style.display='block';});
+
+el('btnAvaliar').onclick=async()=>{
+  if(!nota){alert('Escolha de 1 a 5 estrelas.');return;}
+  const b=el('btnAvaliar');b.disabled=true;b.textContent='Enviando…';
+  try{
+    await fetch(URL_+'/rest/v1/avaliacoes',{method:'POST',
+      headers:Object.assign({},hdr,{'Prefer':'return=minimal'}),
+      body:JSON.stringify([{nota,comentario:el('avComent').value.trim()||null,origem:'bio'}])});
+    el('estrelas').style.display='none';el('boxAval').style.display='none';
+    el('notaTxt').style.display='none';el('obrigado').style.display='block';
+    if(nota>=4){
+      setTimeout(()=>{ if(confirm('Que bom que você gostou!\n\nQuer deixar essa avaliação no Google também? Ajuda muito a gente.'))
+        window.open('https://www.google.com/maps/search/?api=1&query='+encodeURIComponent('Dog do Rubão Lago Norte Brasília'),'_blank');},600);}
+  }catch(e){alert('Não consegui enviar agora. Tente de novo daqui a pouco.');
+    b.disabled=false;b.textContent='Enviar avaliação';}};
+
+iniciar();
+</script>
+</body>
+</html>

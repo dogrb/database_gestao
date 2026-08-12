@@ -871,6 +871,63 @@ th:first-child,td:first-child{padding-left:0}th:last-child,td:last-child{padding
   </div>
 </div>
 
+<!-- ---------------------------------------------------------------- CLIENTES -->
+<div class="page" id="p-clientes">
+  <div class="card">
+    <h2><span class="i" data-ico="clientes"></span>Sua base</h2>
+    <div class="hint" style="margin:0 0 14px">Todo pedido com telefone entra aqui sozinho. Quem veio do Instagram você cadastra abaixo.</div>
+    <div id="resumoClientes"></div>
+  </div>
+
+  <div class="card">
+    <h2><span class="i" data-ico="historico"></span>Quem são</h2>
+    <div class="seg" id="segClientes">
+      <button class="on" data-s="">Todos</button>
+      <button data-s="fiel">Fiéis</button>
+      <button data-s="recorrente">Recorrentes</button>
+      <button data-s="novo">Novos</button>
+      <button data-s="esfriando">Esfriando</button>
+      <button data-s="sumido">Sumidos</button>
+    </div>
+    <label>Buscar</label><input id="clBusca" placeholder="Nome, telefone ou bairro">
+    <div id="listaClientes" style="margin-top:14px"></div>
+    <button class="btn quiet" id="btnMaisClientes" style="margin-top:12px;display:none">Carregar mais</button>
+  </div>
+
+  <div class="card" id="cardNovoCliente">
+    <h2><span class="i" data-ico="mais"></span>Cadastrar cliente</h2>
+    <div class="hint" style="margin:0 0 14px">Para quem chamou no direct ou no WhatsApp e ainda não pediu pelo site.</div>
+    <div class="field-row">
+      <div><label>Nome</label><input id="clNome" placeholder="Nome do cliente"></div>
+      <div><label>Telefone</label><input id="clTel" inputmode="numeric" placeholder="61999999999"></div>
+    </div>
+    <div class="field-row">
+      <div><label>De onde veio</label><select id="clOrigem">
+        <option value="instagram">Instagram</option><option value="whatsapp">WhatsApp</option>
+        <option value="indicacao">Indicação</option><option value="balcao">Balcão</option>
+        <option value="manual">Outro</option></select></div>
+      <div><label>Bairro</label><input id="clBairro" placeholder="Opcional"></div>
+    </div>
+    <label class="perm" style="margin-top:12px"><input type="checkbox" id="clAceita"><span class="sw"></span><span class="txt"><strong>Autorizou receber contato</strong><small>Só marque se a pessoa disse que aceita receber promoção. É exigência da LGPD</small></span></label>
+    <button class="btn" id="btnAddCliente">Salvar cliente</button>
+  </div>
+
+  <div class="card" id="cardExportarClientes">
+    <h2><span class="i" data-ico="baixar"></span>Usar em anúncio</h2>
+    <div class="hint" style="margin:0 0 14px">Baixa a lista em CSV para subir como público personalizado no Gerenciador de Anúncios da Meta. O arquivo sai no formato que eles pedem.</div>
+    <label>Quem entra no arquivo</label>
+    <select id="expQuem">
+      <option value="consentiu">Só quem autorizou contato</option>
+      <option value="compradores">Quem já comprou</option>
+      <option value="sumidos">Sumidos há mais de 60 dias</option>
+      <option value="todos">Todos</option>
+    </select>
+    <div class="hint" id="expPrev" style="margin-top:10px"></div>
+    <button class="btn quiet" id="btnExportarClientes">Baixar CSV</button>
+    <div class="note warn" style="margin-top:16px" id="notaLgpd"></div>
+  </div>
+</div>
+
 <!-- ---------------------------------------------------------------- RASTREIO -->
 <div class="page" id="p-rastreio">
   <div class="card">
@@ -909,7 +966,9 @@ th:first-child,td:first-child{padding-left:0}th:last-child,td:last-child{padding
     <div class="hint" style="margin:0 0 14px">Controla a página onde o cliente monta o pedido.</div>
 
     <label>Endereço do checkout</label>
-    <div class="hint" id="lojaLink" style="margin:0 0 14px"></div>
+    <div class="hint" id="lojaLink" style="margin:0 0 10px"></div>
+    <input id="ljSite" placeholder="https://dogdorubao.com.br">
+    <div class="hint" style="margin:6px 0 14px">O endereço que você divulga para o cliente. Deixe vazio para usar o endereço deste sistema.</div>
 
     <label>Situação</label>
     <select id="ljAberto"><option value="0">Fechada — não aceita pedidos</option><option value="1">Aberta — recebendo pedidos</option></select>
@@ -1018,6 +1077,7 @@ let KEY_=SUPABASE_KEY||localStorage.getItem('sb_key')||'';
    Um só traçado, uma só espessura, mesma grade de 24. Sem emoji.
    ===================================================================== */
 const ICO={
+clientes:'<circle cx="9.6" cy="8.6" r="3.4"/><path d="M3.6 19.4c0-3.1 2.7-5.4 6-5.4s6 2.3 6 5.4"/><path d="M16.4 6.2a3.2 3.2 0 0 1 0 6"/><path d="M18.2 14.6c1.6.8 2.6 2.3 2.6 4"/>',
 moto:'<circle cx="5.6" cy="16.8" r="3"/><circle cx="18.4" cy="16.8" r="3"/><path d="M8.6 16.8h6.2l-3-6.6h-2.6"/><path d="M13.4 10.2h3.2l1.8 6.6"/><path d="M15.4 6.4h3"/>',
 fornecedor:'<path d="M3.4 8.6 5 4.6h14l1.6 4"/><path d="M3.4 8.6h17.2v10.2a1.6 1.6 0 0 1-1.6 1.6H5a1.6 1.6 0 0 1-1.6-1.6z"/><path d="M9.4 12.6h5.2"/>',
 rastreio:'<circle cx="11" cy="11" r="6.6"/><path d="M15.8 15.8 20.6 20.6"/><path d="M11 8v3.2l2.2 1.4"/>',
@@ -1080,6 +1140,7 @@ const MODULOS=[
  {pag:'insumos',  ico:'insumos',  nome:'Insumos',  desc:'Ingredientes, custo e mínimo',         chaves:['insumos.ver','insumos.editar','insumos.custo']},
  {pag:'dinheiro', ico:'dinheiro', nome:'Dinheiro', desc:'Caixa, contas fixas e dívidas',        chaves:['financeiro.ver','financeiro.lancar','financeiro.contas']},
  {pag:'equipe',   ico:'equipe',   nome:'Equipe',   desc:'Quem acessa e o que cada um pode',     chaves:['equipe.ver','equipe.gerenciar']},
+ {pag:'clientes', ico:'clientes', nome:'Clientes', desc:'Quem compra e quem sumiu',           chaves:['clientes.ver']},
  {pag:'rastreio', ico:'rastreio', nome:'Rastreio', desc:'Quem fez o que no sistema',          chaves:['rastreio.ver']},
  {pag:'ajustes',  ico:'ajustes',  nome:'Ajustes',  desc:'Sua conta e os números do negócio',    chaves:null}
 ];
@@ -1092,6 +1153,10 @@ const PERMISSOES=[
  {grupo:'Entregas', ico:'moto', itens:[
    ['entrega.fazer','Trabalhar como entregador','Vê só as entregas livres e as dele. Registra a saída e a chegada'],
    ['entrega.ver','Acompanhar todas as entregas','Ver quem está com cada pedido e fechar o acerto do dinheiro']]},
+ {grupo:'Clientes', ico:'clientes', itens:[
+   ['clientes.ver','Ver a base de clientes','Nomes, telefones e histórico de compra'],
+   ['clientes.editar','Cadastrar e editar cliente','Incluir gente que veio do Instagram ou do WhatsApp'],
+   ['clientes.exportar','Exportar a base','Baixar a lista para usar em campanha de anúncio']]},
  {grupo:'Painel', ico:'painel', itens:[
    ['painel.ver','Ver o painel do dia','Meta, faturamento, sobra, caixa e dívida em aberto']]},
  {grupo:'Vender', ico:'vender', itens:[
@@ -1522,6 +1587,8 @@ async function carregar(silencioso){
       add('gastoForn','v_gasto_fornecedor?select=*');}
     if(perfil&&perfil.super_admin)
       add('auditoria','auditoria?select=*&order=id.desc&limit=250');
+    if(pode('clientes.ver'))
+      add('clientes','v_clientes?select=*&order=ultimo_em.desc.nullslast&limit=2000');
 
     const r=await Promise.all(pedidos);
     const d={};nomes.forEach((k,i)=>d[k]=r[i]);
@@ -1541,7 +1608,7 @@ async function carregar(silencioso){
     S.acertoAberto=d.acertoAberto||[];S.acertos=d.acertos||[];
     S.fornecedores=d.fornecedores||[];S.compras=d.compras||[];S.compraItens=d.compraItens||[];
     S.comparador=d.comparador||[];S.gastoForn=d.gastoForn||[];
-    S.auditoria=d.auditoria||[];
+    S.auditoria=d.auditoria||[];S.clientes=d.clientes||[];
     const c=(d.config||[]).find(x=>x.chave==='geral');S.cfg=(c&&c.valor)||{};
 
     if(antes!==JSON.stringify(permissoes)+'|'+admin){montarNav();aplicarPermissoes();}
@@ -1632,6 +1699,7 @@ function render(){
   if(pode('entrega.fazer')||pode('entrega.ver'))renderEntregas();
   if(pode('compras.ver')||pode('insumos.editar'))renderComprasNovo();
   if(perfil&&perfil.super_admin)renderRastreio();
+  if(pode('clientes.ver'))renderClientes();
   if(pode('painel.ver'))renderPeriodo();
   renderVendasHoje();
   if(admin)renderLojaAjustes();
@@ -2178,7 +2246,8 @@ function renderLojaAjustes(){
   mostrar('cardLoja',admin);
   if(!admin)return;
   const L=S.loja||{};
-  const base=location.origin+'/pedir.html';
+  const base=(L.site_url||'').trim()||(location.origin+'/pedir.html');
+  el('ljSite').value=L.site_url||'';
   el('lojaLink').innerHTML='<a href="'+base+'" target="_blank" style="color:var(--acc)">'+base+'</a>'+
     ' &nbsp;<button class="btn quiet sm" style="margin:0" onclick="copiarLink()">Copiar</button>';
   el('ljAberto').value=L.aberto?'1':'0';
@@ -2201,7 +2270,7 @@ function renderLojaAjustes(){
     pintarIcones(el('mpEstado'));}).catch(()=>{});}
 
 window.copiarLink=()=>{
-  const t=location.origin+'/pedir.html';
+  const t=((S.loja||{}).site_url||'').trim()||(location.origin+'/pedir.html');
   navigator.clipboard.writeText(t).then(()=>alert('Link copiado. Cole no Instagram, no WhatsApp ou no cardápio.'),
     ()=>prompt('Copie o link:',t));};
 
@@ -2219,7 +2288,8 @@ if(el('btnSalvarLoja'))el('btnSalvarLoja').onclick=async()=>{
     pix_chave:el('ljPixChave').value.trim(),
     endereco:el('ljEndereco').value.trim(),
     whatsapp:el('ljWhats').value.replace(/\D/g,''),
-    aviso:el('ljAviso').value.trim()});
+    aviso:el('ljAviso').value.trim(),
+    site_url:el('ljSite').value.trim().replace(/\/+$/,'')});
   if(L.pix_ativo&&!L.pix_chave){alert('Para aceitar Pix antecipado, preencha a chave Pix.');return;}
   if(!L.retirada_ativa&&!L.entrega_ativa){alert('Deixe pelo menos retirada ou entrega ativa.');return;}
   try{await api('config?chave=eq.loja',{method:'PATCH',body:{valor:L},prefer:'return=minimal'});
@@ -2429,7 +2499,11 @@ function renderPedidos(){
       :(PED_PAG[p.pagamento_meio]||'a combinar');
     return '<div class="row" style="align-items:flex-start"><div class="info">'+
       '<div class="nm">#'+p.numero+' · '+esc(p.cliente_nome)+' <span class="pill '+st.c+'">'+st.t+'</span></div>'+
-      '<div class="mt">'+its.map(i=>qtdBR(i.qtd)+'x '+esc(i.nome)+(i.observacao?' ('+esc(i.observacao)+')':'')).join(' · ')+'</div>'+
+      '<div class="mt">'+its.map(i=>{
+        const ex=(i.escolhas||[]).filter(e=>num(e.preco)>0||/prote/i.test(e.grupo||''));
+        return '<b>'+qtdBR(i.qtd)+'x '+esc(i.nome)+'</b>'+
+          (ex.length?'<br><span style="opacity:.85">↳ '+ex.map(e=>esc(e.nome)).join(', ')+'</span>':'')+
+          (i.observacao?'<br><span style="opacity:.85">↳ “'+esc(i.observacao)+'”</span>':'');}).join('<br>')+'</div>'+
       '<div class="mt">'+(p.tipo==='entrega'?'Entrega':'Retirada')+
         (p.entregador_nome?' com '+esc(p.entregador_nome):'')+' · '+R$(num(p.total))+' · '+pagoTxt+
         (p.troco_para?' · troco para '+R$(num(p.troco_para)):'')+'</div>'+
@@ -2502,8 +2576,11 @@ window.imprimirPedido=id=>{
     (p.endereco?'<div>'+esc(p.endereco)+'</div>':'')+
     (p.referencia?'<div>Ref: '+esc(p.referencia)+'</div>':'')+
     '<div class="hr"></div>'+
-    '<table>'+its.map(i=>linha(qtdBR(i.qtd)+'x '+esc(i.nome)+(i.observacao?'<br>&nbsp;&nbsp;* '+esc(i.observacao):''),
-      R$(num(i.preco_unit)*num(i.qtd)))).join('')+'</table>'+
+    '<table>'+its.map(i=>linha(
+      qtdBR(i.qtd)+'x '+esc(i.nome)+
+      (i.escolhas||[]).map(e=>'<br>&nbsp;&nbsp;+ '+esc(e.nome)).join('')+
+      (i.observacao?'<br>&nbsp;&nbsp;* '+esc(i.observacao):''),
+      R$((num(i.preco_unit)+num(i.extras_valor))*num(i.qtd)))).join('')+'</table>'+
     '<div class="hr"></div>'+
     '<table>'+linha('Subtotal',R$(num(p.subtotal)))+
       (num(p.taxa_entrega)?linha('Entrega',R$(num(p.taxa_entrega))):'')+
@@ -2976,6 +3053,118 @@ window.verMudanca=id=>{
 if(el('btnMaisRastreio'))el('btnMaisRastreio').onclick=()=>{rsLimite+=60;renderRastreio();};
 ['rsQuem','rsTabela'].forEach(i=>{if(el(i))el(i).onchange=()=>{rsLimite=60;renderRastreio();};});
 if(el('rsBusca'))el('rsBusca').oninput=()=>{rsLimite=60;renderRastreio();};
+
+
+/* =====================================================================
+   CLIENTES
+   ===================================================================== */
+let clFiltro='',clLimite=50;
+const SIT_COR={fiel:'ok',recorrente:'ok',novo:'warn',esfriando:'warn',sumido:'bad','sem compra':'mut'};
+const telBR=t=>{const d=String(t||'').replace(/\D/g,'');
+  return d.length===11?'('+d.slice(0,2)+') '+d.slice(2,7)+'-'+d.slice(7)
+       :d.length===10?'('+d.slice(0,2)+') '+d.slice(2,6)+'-'+d.slice(6):d;};
+
+function renderClientes(){
+  if(!el('listaClientes'))return;
+  mostrar('cardNovoCliente',pode('clientes.editar'));
+  mostrar('cardExportarClientes',pode('clientes.exportar'));
+
+  const todos=S.clientes||[];
+  const porSit={};
+  todos.forEach(c=>{porSit[c.situacao]=(porSit[c.situacao]||0)+1;});
+  const gasto=todos.reduce((s,c)=>s+num(c.total_gasto),0);
+  const comConsent=todos.filter(c=>c.aceita_marketing).length;
+
+  el('resumoClientes').innerHTML=
+    '<div class="grid2">'+
+      '<div class="tile"><div class="lbl">Pessoas na base</div><div class="val">'+todos.length+'</div></div>'+
+      '<div class="tile"><div class="lbl">Autorizaram contato</div><div class="val">'+comConsent+'</div></div>'+
+      '<div class="tile"><div class="lbl">Já compraram</div><div class="val">'+todos.filter(c=>c.pedidos_qtd>0).length+'</div></div>'+
+      '<div class="tile"><div class="lbl">Valor total comprado</div><div class="val">'+R0(gasto)+'</div></div>'+
+    '</div>'+
+    (Object.keys(porSit).length?'<table style="margin-top:14px">'+
+      ['fiel','recorrente','novo','esfriando','sumido','sem compra'].filter(k=>porSit[k])
+      .map(k=>'<tr><td><span class="pill '+(SIT_COR[k]||'mut')+'">'+k+'</span></td>'+
+        '<td class="num">'+porSit[k]+'</td></tr>').join('')+'</table>':'');
+
+  const q=(el('clBusca').value||'').toLowerCase();
+  const lista=todos.filter(c=>
+    (!clFiltro||c.situacao===clFiltro)&&
+    (!q||(c.nome||'').toLowerCase().includes(q)||String(c.telefone).includes(q.replace(/\D/g,''))||(c.bairro||'').toLowerCase().includes(q)));
+
+  el('listaClientes').innerHTML=lista.length?lista.slice(0,clLimite).map(c=>
+    '<div class="row" style="align-items:flex-start"><div class="info">'+
+    '<div class="nm">'+esc(c.nome||'Sem nome')+' <span class="pill '+(SIT_COR[c.situacao]||'mut')+'">'+esc(c.situacao)+'</span>'+
+      (c.aceita_marketing?' <span class="pill ok">autorizou</span>':'')+'</div>'+
+    '<div class="mt">'+telBR(c.telefone)+(c.bairro?' · '+esc(c.bairro):'')+'</div>'+
+    '<div class="mt">'+c.pedidos_qtd+' pedido(s) · '+R$(num(c.total_gasto))+
+      (num(c.ticket_medio)?' · ticket '+R$(num(c.ticket_medio)):'')+'</div>'+
+    (c.ultimo_em?'<div class="mt" style="opacity:.7">última compra '+dataHoraBR(c.ultimo_em)+
+      (c.dias_sem_comprar>0?' · há '+c.dias_sem_comprar+' dias':'')+'</div>':'')+
+    '<div class="acts" style="margin-top:10px">'+
+      '<a class="btn quiet sm" style="text-decoration:none;text-align:center" href="https://wa.me/55'+esc(c.telefone)+'">Chamar</a>'+
+      (pode('clientes.editar')?'<button class="btn quiet sm" onclick="alternarConsentimento(\''+c.id+'\','+(!c.aceita_marketing)+')">'+
+        (c.aceita_marketing?'Tirar autorização':'Marcar que autorizou')+'</button>':'')+
+    '</div></div></div>').join('')
+    :'<div class="empty">Ninguém aqui ainda. Todo pedido feito pelo site entra sozinho.</div>';
+  mostrar('btnMaisClientes',lista.length>clLimite);
+  atualizarPrevExport();
+
+  el('notaLgpd').innerHTML=ico('aviso')+'<div class="body"><b>Antes de anunciar para esta lista</b>'+
+    'A LGPD exige base legal para usar dado pessoal em marketing. Quem pediu comida não autorizou automaticamente receber promoção. '+
+    'Use preferencialmente a lista de quem marcou que autorizou, e deixe sempre um jeito fácil de sair.</div>';
+  pintarIcones(el('notaLgpd'));}
+
+window.alternarConsentimento=async(id,v)=>{
+  try{await api('clientes?id=eq.'+id,{method:'PATCH',prefer:'return=minimal',
+    body:{aceita_marketing:v,consentiu_em:v?new Date().toISOString():null}});
+    carregar();}catch(e){alert(traduz(e.message));}};
+
+if(el('btnAddCliente'))el('btnAddCliente').onclick=async()=>{
+  const nome=el('clNome').value.trim(),tel=el('clTel').value.replace(/\D/g,'');
+  if(nome.length<2){alert('Escreva o nome.');return;}
+  if(tel.length<10){alert('Informe o telefone com DDD.');return;}
+  const aceita=el('clAceita').checked;
+  try{
+    await api('clientes',{method:'POST',prefer:'resolution=merge-duplicates,return=minimal',body:[{
+      telefone:tel,nome,origem:el('clOrigem').value,bairro:el('clBairro').value.trim()||null,
+      aceita_marketing:aceita,consentiu_em:aceita?new Date().toISOString():null}]});
+    ['clNome','clTel','clBairro'].forEach(i=>el(i).value='');el('clAceita').checked=false;
+    carregar();
+  }catch(e){alert(traduz(e.message));}};
+
+function listaExport(){
+  const t=S.clientes||[],q=el('expQuem')?el('expQuem').value:'consentiu';
+  if(q==='consentiu')return t.filter(c=>c.aceita_marketing);
+  if(q==='compradores')return t.filter(c=>c.pedidos_qtd>0);
+  if(q==='sumidos')return t.filter(c=>c.situacao==='sumido');
+  return t;}
+
+function atualizarPrevExport(){
+  if(!el('expPrev'))return;
+  const n=listaExport().length;
+  el('expPrev').textContent=n?n+(n===1?' pessoa entra no arquivo.':' pessoas entram no arquivo.'):'Ninguém se encaixa neste filtro.';}
+if(el('expQuem'))el('expQuem').onchange=atualizarPrevExport;
+
+if(el('btnExportarClientes'))el('btnExportarClientes').onclick=()=>{
+  const lista=listaExport();
+  if(!lista.length){alert('Nenhum cliente neste filtro.');return;}
+  if(el('expQuem').value!=='consentiu'&&
+     !confirm('Esta lista inclui gente que não marcou autorização para receber contato.\n\nA LGPD exige base legal para usar dado pessoal em marketing. Continuar mesmo assim?'))return;
+  const linhas=[['phone','fn','city','value']].concat(lista.map(c=>{
+    const nome=(c.nome||'').split(' ')[0].toLowerCase();
+    return ['+55'+String(c.telefone).replace(/\D/g,''), nome, (c.bairro||'').toLowerCase(), num(c.total_gasto).toFixed(2)];}));
+  const csv=linhas.map(l=>l.map(x=>'"'+String(x).replace(/"/g,'""')+'"').join(',')).join('\n');
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob(['﻿'+csv],{type:'text/csv;charset=utf-8'}));
+  a.download='clientes-dogdorubao-'+hojeISO()+'.csv';a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href),2000);};
+
+document.querySelectorAll('#segClientes button').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('#segClientes button').forEach(x=>x.classList.remove('on'));
+  b.classList.add('on');clFiltro=b.dataset.s;clLimite=50;renderClientes();});
+if(el('btnMaisClientes'))el('btnMaisClientes').onclick=()=>{clLimite+=50;renderClientes();};
+if(el('clBusca'))el('clBusca').oninput=()=>{clLimite=50;renderClientes();};
 
 /* =====================================================================
    AÇÕES

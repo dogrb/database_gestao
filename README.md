@@ -10,7 +10,10 @@ Sistema de gestão do trailer: vendas, cardápio com ficha técnica, estoque, pr
 | `sw.js` | Service worker. Cuida das notificações no celular. |
 | `manifest.json` | Deixa o sistema instalável como aplicativo. |
 | `icone-192.png` / `icone-512.png` | Ícone do app e das notificações. |
-| `pedir.html` | Checkout público. É onde o cliente monta o pedido. |
+| `pedir.html` | Cardápio visual e checkout. É o que abre em dogdorubao.com.br. |
+| `bio.html` | Página de links do Instagram. Abre em dogdorubao.com.br/bio. |
+| `fotos/` | As 11 fotos do cardápio, em WebP. 429 KB no total. |
+| `functions/_middleware.js` | Separa os dois endereços: cliente e equipe nunca se cruzam. |
 | `casal.html` | Painel financeiro pessoal do casal. Separado do negócio de propósito. |
 | `banco-de-dados.sql` | Estrutura do banco. Já aplicado — fica como cópia de segurança. |
 
@@ -50,6 +53,40 @@ Notificação push nativa do navegador — gratuita, sem serviço contratado. Ch
 - O agendador no Supabase (`pg_cron`) verifica a cada 30 minutos e envia o resumo do dia às 7h.
 
 O que gera aviso: preparo vencido, preparo vencendo nas próximas horas, preparo que não tem lote pronto, insumo abaixo do mínimo, pedido de reposição da equipe, cadastro novo aguardando autorização e conta com poder de administrador.
+
+## Dois endereços, um deploy
+
+| Endereço | O que abre | Quem usa |
+|---|---|---|
+| `dogdorubao.com.br` | O cardápio e o checkout | O cliente |
+| `dogdorubao.com.br/bio` | A página de links do Instagram | O cliente |
+| `gestao.dogdorubao.com.br` | O sistema de gestão | Você e a equipe |
+
+O `functions/_middleware.js` decide pelo domínio da requisição. No endereço do cliente, o sistema de gestão simplesmente não existe: `/index.html` serve o cardápio, `/sw.js` responde 404 e qualquer outro caminho volta para a raiz. Não há link, botão ou caminho que leve o cliente à tela de login da equipe.
+
+## O cardápio do cliente
+
+Fotos em cada item, com a chamada do cardápio impresso ("A receita da casa", "Os três molhos da casa"). O cliente toca no produto, escolhe o que quer e adiciona sem sair da navegação.
+
+**Personalização por item:** cada produto carrega os próprios grupos de escolha, guardados em `produtos.opcoes`. Hoje são três tipos: escolher entre salsicha e linguiça sem custo (Cheddar, Indiano, Dog'Alho), queijo derretido nos baguetes por R$ 4, e os adicionais de R$ 4 em qualquer sanduíche. Para mudar isso não é preciso mexer no site, só no banco.
+
+**O carrinho** é uma bolha fixa no canto, que pulsa a cada item novo e mostra a contagem e o valor. Sobrevive a recarregar a página.
+
+**O preço nunca vem do navegador.** A função `criar-pedido` busca o produto e as opções no banco e recalcula tudo. Adicional inventado ou preço alterado no console derruba o pedido antes de gravar.
+
+## Página de links
+
+`/bio` é o endereço para o link do Instagram: botão de pedido, WhatsApp, mapa, os queridinhos com foto, os quatro pilares da casa, horário de funcionamento e avaliação por estrelas. Nota 4 ou 5 convida a repetir a avaliação no Google.
+
+As avaliações ficam em `avaliacoes`. O visitante escreve, mas não lê o que os outros escreveram — a política de leitura exige login.
+
+## Base de clientes
+
+Todo pedido com telefone válido cria ou atualiza o cliente sozinho. Quem veio do Instagram ou do WhatsApp você cadastra na mão.
+
+A base classifica cada pessoa: **novo**, **recorrente**, **fiel** (5 compras ou mais), **esfriando** (30 dias sem comprar) e **sumido** (60 dias). Guarda quantas compras, quanto gastou, ticket médio e há quantos dias não aparece.
+
+**Consentimento:** o checkout tem uma caixa onde o cliente autoriza receber promoções, e a base registra a data. A exportação para o Gerenciador de Anúncios da Meta sai no formato deles e, por padrão, só inclui quem autorizou. Pedir comida não é o mesmo que autorizar propaganda — a LGPD trata isso como bases legais diferentes.
 
 ## Pedidos e checkout
 
@@ -91,7 +128,7 @@ O sino no cabeçalho guarda o histórico de tudo que o sistema avisou, com conta
 
 ## Banco de dados
 
-**Tabelas:** `perfis`, `insumos`, `produtos`, `receitas`, `preparos`, `producoes`, `pedidos`, `pedido_itens`, `acertos`, `fornecedores`, `compras`, `compra_itens`, `vendas`, `estoque_lanc`, `reposicao`, `movimentos`, `contas_fixas`, `dividas`, `config`, `push_assinaturas`, `avisos_enviados`, `mural`, `mural_lido`, `auditoria`, `segredos`
+**Tabelas:** `perfis`, `insumos`, `produtos`, `receitas`, `preparos`, `producoes`, `pedidos`, `pedido_itens`, `acertos`, `fornecedores`, `compras`, `compra_itens`, `vendas`, `estoque_lanc`, `reposicao`, `movimentos`, `contas_fixas`, `dividas`, `config`, `push_assinaturas`, `avisos_enviados`, `mural`, `mural_lido`, `auditoria`, `clientes`, `avaliacoes`, `segredos`
 
 **Relatórios prontos:** `v_custo_produto`, `v_estoque`, `v_vendas_dia`, `v_vendas_mes`, `v_ranking_produtos`, `v_producoes_ativas`, `v_acerto_aberto`, `v_comparador`, `v_preco_fornecedor`, `v_gasto_fornecedor`
 
@@ -118,6 +155,8 @@ O sino no cabeçalho guarda o histórico de tudo que o sistema avisou, com conta
 |---|---|---|
 | v1.0 | 10/08/2026 | Primeira versão no ar: login, papéis, vendas, cardápio, ficha técnica, estoque com baixa automática, lista de compras, financeiro, equipe |
 | v1.1 | 10/08/2026 | Aba Produção com controle de validade; separação entre insumo de compra e de preparo; exclusão de usuário com administrador principal protegido; notificações push no celular; cardápio e fichas técnicas carregados do catálogo |
+| v1.5 | 12/08/2026 | Cardápio visual com as fotos do material impresso, adicionais e escolhas por produto validados no servidor, carrinho flutuante; página de links em /bio com avaliação por estrelas |
+| v1.4 | 12/08/2026 | Base de clientes com segmentação, consentimento de marketing e exportação para anúncios; separação por domínio entre o site do cliente e o sistema da equipe |
 | v1.3 | 12/08/2026 | Entregador com registro de saída e chegada, acerto de caixa e venda automática na entrega; filtro de período no painel com faixa de horário; venda registrada uma a uma com hora; fornecedores, compras e comparador de preços; trilha de auditoria restrita à conta principal |
 | v1.2 | 10/08/2026 | Mural de avisos no sino do cabeçalho; aba Pedidos com fila de cozinha, pedido no balcão e notinha de 80mm; checkout público em `/pedir.html` com retirada ou entrega e três formas de pagamento |
 
