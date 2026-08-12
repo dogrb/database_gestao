@@ -122,13 +122,29 @@ Com isso o sistema monta o **comparador**: para cada insumo, o último preço de
 
 Toda inserção, alteração e exclusão nas tabelas do negócio fica gravada em `auditoria`, com quem fez, quando, e o antes e depois de cada campo. A aba só aparece para a conta principal — nem outro administrador enxerga.
 
+## Rotina e padrão
+
+A aba **Rotina** organiza o que acontece fora do balcão.
+
+**Abertura** — 27 passos, contando para trás das 18h, agrupados em sete blocos. Começa pelo que demora mais (batata chips e recheio vegetariano) e termina em abrir a loja no sistema. Uma contagem regressiva mostra quanto falta para abrir, qual é o passo da vez e quantos minutos está atrasado.
+
+**Fechamento, limpeza diária e limpeza semanal profunda** — a limpeza diária cobre bancadas, chapa, boleira, mesas, toalhas, vasilhas de molho, chão e paredes. A semanal cobre o que a diária não alcança: filtro da coifa, fogão desmontado, geladeira, mangueira de gás com teste de bolha, extintor e revisão de validade.
+
+Cada item registra quem marcou e a que horas. Quando todos os obrigatórios estão feitos, a rotina fecha sozinha.
+
+**Padrão de montagem** — cada produto tem o passo a passo na ordem certa. Nasce como rascunho e vira padrão da casa quando o dono aprova.
+
+**Custo de operar** — combustível por dia e gás amortizado pela duração real do botijão. O sistema aprende quantos dias um botijão dura no seu trailer e calcula o custo fixo diário, aquele que sai antes de vender o primeiro dog.
+
+O agendador avisa quando a rotina não começou perto da hora, quando passou da hora sem terminar, e quando a limpeza semanal passa de 8 dias.
+
 ## Mural de avisos
 
 O sino no cabeçalho guarda o histórico de tudo que o sistema avisou, com contador de não lidos. Tocar em um aviso leva direto para a aba onde o problema está.
 
 ## Banco de dados
 
-**Tabelas:** `perfis`, `insumos`, `produtos`, `receitas`, `preparos`, `producoes`, `pedidos`, `pedido_itens`, `acertos`, `fornecedores`, `compras`, `compra_itens`, `vendas`, `estoque_lanc`, `reposicao`, `movimentos`, `contas_fixas`, `dividas`, `config`, `push_assinaturas`, `avisos_enviados`, `mural`, `mural_lido`, `auditoria`, `clientes`, `avaliacoes`, `segredos`
+**Tabelas:** `perfis`, `insumos`, `produtos`, `receitas`, `preparos`, `producoes`, `pedidos`, `pedido_itens`, `acertos`, `fornecedores`, `compras`, `compra_itens`, `vendas`, `estoque_lanc`, `reposicao`, `movimentos`, `contas_fixas`, `dividas`, `config`, `push_assinaturas`, `avisos_enviados`, `mural`, `mural_lido`, `auditoria`, `clientes`, `avaliacoes`, `rotinas`, `rotina_itens`, `execucoes`, `execucao_itens`, `abastecimentos`, `botijoes`, `segredos`
 
 **Relatórios prontos:** `v_custo_produto`, `v_estoque`, `v_vendas_dia`, `v_vendas_mes`, `v_ranking_produtos`, `v_producoes_ativas`, `v_acerto_aberto`, `v_comparador`, `v_preco_fornecedor`, `v_gasto_fornecedor`
 
@@ -155,6 +171,7 @@ O sino no cabeçalho guarda o histórico de tudo que o sistema avisou, com conta
 |---|---|---|
 | v1.0 | 10/08/2026 | Primeira versão no ar: login, papéis, vendas, cardápio, ficha técnica, estoque com baixa automática, lista de compras, financeiro, equipe |
 | v1.1 | 10/08/2026 | Aba Produção com controle de validade; separação entre insumo de compra e de preparo; exclusão de usuário com administrador principal protegido; notificações push no celular; cardápio e fichas técnicas carregados do catálogo |
+| v1.6 | 12/08/2026 | Aba Rotina: abertura com contagem regressiva, fechamento, limpeza diária e semanal; POP de montagem por produto; custo de combustível e de gás por dia de operação; avisos de rotina atrasada |
 | v1.5 | 12/08/2026 | Cardápio visual com as fotos do material impresso, adicionais e escolhas por produto validados no servidor, carrinho flutuante; página de links em /bio com avaliação por estrelas |
 | v1.4 | 12/08/2026 | Base de clientes com segmentação, consentimento de marketing e exportação para anúncios; separação por domínio entre o site do cliente e o sistema da equipe |
 | v1.3 | 12/08/2026 | Entregador com registro de saída e chegada, acerto de caixa e venda automática na entrega; filtro de período no painel com faixa de horário; venda registrada uma a uma com hora; fornecedores, compras e comparador de preços; trilha de auditoria restrita à conta principal |
